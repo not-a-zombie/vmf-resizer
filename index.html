@@ -1,0 +1,130 @@
+<html>
+<head>
+<script src="download.js"></script>
+<script src="vmfparserlib.js"></script>
+<script src="vmfparser.js"></script>
+<script>
+	var text = ""
+	var parsed;
+	function logChanges(str){
+		document.getElementById("outputText").innerHTML += str + "\n"
+	}
+	function parseVMF(){
+		var file = document.getElementById("fileInput").files[0];
+		var reader = new FileReader();
+		reader.onload = function(e){
+			
+			text=reader.result;
+			parsed = vmfparser.parse(text);
+			doChanges();
+		}
+		reader.readAsText(file);
+	}
+	function modifyVMF(parsedvmf,materialName,playerWidth,moveSolidsInsteadOfFaces, replacementMaterial){
+		if(moveSolidsInsteadOfFaces){
+			var solids = findAllKeyvalsRecursive(parsedvmf,"solid");
+			solids.map(function(solid){
+				var side = null;
+				var failure = false;
+				findAllKeyvals(solid,"side").map(function(_side){
+					if(unquote(findKeyval(_side,"\"material\"").string_val.toUpperCase())==materialName.toUpperCase()){
+						if(side!=null){
+							failure=true;
+						}
+						else{
+							side=_side
+						}
+					}
+				});
+				if(failure){
+					logChanges("found multiple faces to modify on solid " + findKeyval(solid,"\"id\"").string_val + ", ignoring");
+				}else if(side){						
+					var plane = strToPlane(findKeyval(side,"\"plane\"").string_val);
+					var normal = calculateNormalOfPlane(plane);
+					var theta = vecToEulerAngles(normal)[0];
+					var amt = calculateMoveDistance(theta,playerWidth);
+					var displacement = [amt*Math.cos(theta),amt*Math.sin(theta),0];
+					findAllKeyvals(solid,"side").map(function(_side){							
+						findKeyval(_side,"\"plane\"").string_val=planeToStr(displacePlane(displacement,strToPlane(findKeyval(_side,"\"plane\"").string_val)));
+					});
+					logChanges("Moved solid " + findKeyval(solid,"\"id\"").string_val + " in the direction [" + displacement.join(" ")+"]");
+					if(replacementMaterial){//empty string is falsy
+						findKeyval(_side,"\"material\"").string_val=replacementMaterial;
+						logChanges("Replaced material on side " + findKeyval(side,"\"id\"").string_val);
+					}
+				}
+			
+			});
+			
+		}		
+		else{
+			var sides = findAllKeyvalsRecursive(parsedvmf,"side");
+			sides.map(function(side){
+				if(unquote(findKeyval(side,"\"material\"").string_val.toUpperCase())==materialName.toUpperCase()){
+					//move this thing the appropriate amount
+					var plane = strToPlane(findKeyval(side,"\"plane\"").string_val);
+					var normal = calculateNormalOfPlane(plane);
+					var theta = vecToEulerAngles(normal)[0];
+					var amt = calculateMoveDistance(theta,playerWidth);
+					var displacement = [amt*Math.cos(theta),amt*Math.sin(theta),0];
+					plane=displacePlane(displacement,plane);
+					findKeyval(side,"\"plane\"").string_val=planeToStr(plane);
+					logChanges("Moved face " + findKeyval(side,"\"id\"").string_val + " in the direction [" + displacement.join(" ")+"]"); 
+					if(replacementMaterial){//empty string is falsy
+						findKeyval(_side,"\"material\"").string_val=replacementMaterial;
+						logChanges("Replaced material on side " + findKeyval(side,"\"id\"").string_val);
+					}
+				}
+			});
+		}
+		
+	}
+	function calculateMoveDistance(theta,playerWidth){
+		var theta = (theta+ 2 * Math.PI) % (Math.PI / 2);
+		return (Math.sqrt(2)*Math.cos(theta-Math.PI/4)-1)*playerWidth/2;		
+	}
+	function doChanges(){
+		if(parsed){
+			modifyVMF(parsed,document.getElementById("materialInputFace").value,Number(document.getElementById("widthInput").value),false);
+			modifyVMF(parsed,document.getElementById("materialInputSolid").value,Number(document.getElementById("widthInput").value),true);
+			saveVMF(parsed);
+		}else{
+			logChanges("No VMF parsed");
+		}
+	}
+	function saveVMF(parsedVMF){
+		var str = printVMF(parsedVMF);
+		download(str,getVMFName() + "_modified.vmf","text/plain");
+	}
+	function getVMFName(){
+		var path = document.getElementById("fileInput").value.split(/[\\\/]/g);
+		return path[path.length-1].split(".")[0];
+	}
+</script>
+</head>
+<body>
+<h1>
+What's this?
+</h1>
+In the source engine, player models are axis aligned bounding boxes - this means that the player model is "bigger" in directions that are not axis aligned.<br/>
+To compensate for this, you can replace collisions for important affected parts with a separate collision brush that is inset a few units.
+This is a tool for automatically calculating the correct distance for the chosen brushes/faces and moving them.
+<br/>
+<br/>
+<div>
+<input type="file" id="fileInput"/>
+<br/>
+Material to resize faces<input type="text" id="materialInputFace" value=""/>
+<br/>
+Material to resize solids<input type="text" id="materialInputSolid" value="TOOLS/TOOLSCLIP"/>
+<br/>
+Replace above materials with the following (leave blank for no replacement<input type="text" id="replacedMaterialInput" value="TOOLS/TOOLSPLAYERCLIP"/>
+Player width<input type="text" id="widthInput" value="32"/>
+<br/>
+<br/>
+<button type="button" onclick="parseVMF()">Modify vmf</button>
+</div>
+<textarea rows="10" cols="80" id="outputText">
+</textarea>
+</body>
+</html>
