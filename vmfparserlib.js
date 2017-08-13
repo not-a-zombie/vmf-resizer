@@ -37,6 +37,9 @@ function unquote(str){
 	}
 	return str;
 }
+function quote(str){
+	return "\""+str+"\"";
+}
 function strToPlane(str){
 	return str.match(/[\d\.\-]+/g).map(Number);
 }
