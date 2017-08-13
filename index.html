@@ -49,7 +49,7 @@
 					});
 					logChanges("Moved solid " + findKeyval(solid,"\"id\"").string_val + " in the direction [" + displacement.join(" ")+"]");
 					if(replacementMaterial){//empty string is falsy
-						findKeyval(_side,"\"material\"").string_val=replacementMaterial;
+						findKeyval(side,"\"material\"").string_val=quote(replacementMaterial);
 						logChanges("Replaced material on side " + findKeyval(side,"\"id\"").string_val);
 					}
 				}
@@ -71,7 +71,7 @@
 					findKeyval(side,"\"plane\"").string_val=planeToStr(plane);
 					logChanges("Moved face " + findKeyval(side,"\"id\"").string_val + " in the direction [" + displacement.join(" ")+"]"); 
 					if(replacementMaterial){//empty string is falsy
-						findKeyval(_side,"\"material\"").string_val=replacementMaterial;
+						findKeyval(side,"\"material\"").string_val=quote(replacementMaterial);
 						logChanges("Replaced material on side " + findKeyval(side,"\"id\"").string_val);
 					}
 				}
@@ -85,8 +85,8 @@
 	}
 	function doChanges(){
 		if(parsed){
-			modifyVMF(parsed,document.getElementById("materialInputFace").value,Number(document.getElementById("widthInput").value),false);
-			modifyVMF(parsed,document.getElementById("materialInputSolid").value,Number(document.getElementById("widthInput").value),true);
+			modifyVMF(parsed,document.getElementById("materialInputFace").value,Number(document.getElementById("widthInput").value),false,document.getElementById("replacedMaterialInput").value);
+			modifyVMF(parsed,document.getElementById("materialInputSolid").value,Number(document.getElementById("widthInput").value),true,document.getElementById("replacedMaterialInput").value);
 			saveVMF(parsed);
 		}else{
 			logChanges("No VMF parsed");
