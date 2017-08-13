@@ -116,9 +116,10 @@ This is a tool for automatically calculating the correct distance for the chosen
 <br/>
 Material to resize faces<input type="text" id="materialInputFace" value=""/>
 <br/>
-Material to resize solids<input type="text" id="materialInputSolid" value="TOOLS/TOOLSCLIP"/>
+Material to resize solids<input type="text" id="materialInputSolid" value=""/>
 <br/>
-Replace above materials with the following (leave blank for no replacement<input type="text" id="replacedMaterialInput" value="TOOLS/TOOLSPLAYERCLIP"/>
+Replace above materials with the following (leave blank for no replacement<input type="text" id="replacedMaterialInput" value=""/>
+<br/>
 Player width<input type="text" id="widthInput" value="32"/>
 <br/>
 <br/>
@@ -126,5 +127,51 @@ Player width<input type="text" id="widthInput" value="32"/>
 </div>
 <textarea rows="10" cols="80" id="outputText">
 </textarea>
+
+<br/>
+<br/>
+<h2>Recommended Usage</h2>
+<h3>Step 1</h3>
+Find all the brushes in your map where accurate collisions are important.  Figure out if you want to move just a single face or if you want to move the whole brush.
+<h4>Single face</h4>
+If a brush needs accurate collisions on more than 1 face, you might want to use this mode.  For example, a ramp that is also part of a wall.
+<h4>Whole brush</h4>
+If a brush only needs accurate collision on one face, and it is more important for the overall size of the collision to remain the same, you might want to use whole brush.  For example, a ramp that is only relevant for its usage while surfing.
+<h3>Step 2</h3>
+Make a copy of each relevant brush and texture the copy with tools/toolsplayerclip.
+Texture the faces that need movement with a different texture not already used in your map (e.g. tools/toolsclip)
+Make each original brush a brush entity that has no collision (e.g. func_brush with solidity set to Never Solid).  
+You should now have 2 different brushes on top of each other, one which is a collision with no visible part, one which is a visible part with no collision.
+<h3>Step 3</h3>
+Choose the vmf in the file selector and set all the relevant fields.  In Counter-Strike, player width is 32 units.  In Team Fortress 2, player width is 48 units.
+Then, click the "modify vmf" button and wait for the webpage to process the file.
+<h3>Step 4</h4>
+Check the new vmf for any problems and make sure everything works properly.
+<br/>
+In particular, I have not verified that curved ramps will work properly when modified like this.
+<br/>
+<br/>
+<h2>Examples</h2>
+Here is an example of some surf ramps resized using this tool - The first vmf is before modification, the second is after modification, and the bsp is the compiled modified version.
+<div>
+<a href="examples/examplevmf.vmf">examplevmf.vmf</a>
+<br/>
+<a href="examples/examplevmf_modified.vmf">examplevmf_modified.vmf</a>
+<br/>
+<a href="examples/examplemap.bsp">examplemap.bsp</a>
+</div>  
+<br/>
+The redder ramps are not modified using this tool, the grayer ramps are. In game, you can tell that the collision on the non-axis aligned redder ramps appears different than the axis aligned ones.  The gray ones do not have this problem.
+<br/>
+<h3>This vmf was processed with the settings of:</h3>
+Material to resize faces<input type="text" disabled value=""/>
+<br/>
+Material to resize solids<input type="text" disabled value="TOOLS/TOOLSCLIP"/>
+<br/>
+Replace above materials with the following (leave blank for no replacement<input type="text" disabled value="TOOLS/TOOLSPLAYERCLIP"/>
+<br/>
+Player width<input type="text" disabled value="32"/>
+<br/>
+
 </body>
 </html>
