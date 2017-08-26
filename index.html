@@ -114,9 +114,9 @@ This is a tool for automatically calculating the correct distance for the chosen
 <div>
 <input type="file" id="fileInput"/>
 <br/>
-Material to resize faces<input type="text" id="materialInputFace" value=""/>
-<br/>
 Material to resize solids<input type="text" id="materialInputSolid" value=""/>
+<br/>
+Material to resize faces<input type="text" id="materialInputFace" value=""/>
 <br/>
 Replace above materials with the following (leave blank for no replacement<input type="text" id="replacedMaterialInput" value=""/>
 <br/>
@@ -125,7 +125,7 @@ Player width<input type="text" id="widthInput" value="32"/>
 <br/>
 <button type="button" onclick="parseVMF()">Modify vmf</button>
 </div>
-<textarea rows="10" cols="80" id="outputText">
+<textarea rows="10" cols="80" id="outputText" disabled>
 </textarea>
 
 <br/>
@@ -139,7 +139,7 @@ If a brush needs accurate collisions on more than 1 face, you might want to use 
 If a brush only needs accurate collision on one face, and it is more important for the overall size of the collision to remain the same, you might want to use whole brush.  For example, a ramp that is only relevant for its usage while surfing.
 <h3>Step 2</h3>
 Make a copy of each relevant brush and texture the copy with tools/toolsplayerclip.
-Texture the faces that need movement with a different texture not already used in your map (e.g. tools/toolsclip)
+Texture the faces that need movement with a different texture not already used in your map (e.g. tools/toolsclip).  Note that you should leave the original brush with normal textures alone - only apply this different texture to the playerclip brush you just made.
 Make each original brush a brush entity that has no collision (e.g. func_brush with solidity set to Never Solid).  
 You should now have 2 different brushes on top of each other, one which is a collision with no visible part, one which is a visible part with no collision.
 <h3>Step 3</h3>
@@ -164,9 +164,9 @@ Here is an example of some surf ramps resized using this tool - The first vmf is
 The redder ramps are not modified using this tool, the grayer ramps are. In game, you can tell that the collision on the non-axis aligned redder ramps appears different than the axis aligned ones.  The gray ones do not have this problem.
 <br/>
 <h3>This vmf was processed with the settings of:</h3>
-Material to resize faces<input type="text" disabled value=""/>
-<br/>
 Material to resize solids<input type="text" disabled value="TOOLS/TOOLSCLIP"/>
+<br/>
+Material to resize faces<input type="text" disabled value=""/>
 <br/>
 Replace above materials with the following (leave blank for no replacement<input type="text" disabled value="TOOLS/TOOLSPLAYERCLIP"/>
 <br/>
