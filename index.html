@@ -114,11 +114,11 @@ This is a tool for automatically calculating the correct distance for the chosen
 <div>
 <input type="file" id="fileInput"/>
 <br/>
-Material to resize solids<input type="text" id="materialInputSolid" value=""/>
+Material to resize solids<input type="text" id="materialInputSolid" value="TOOLS/TOOLSCLIP"/>
 <br/>
 Material to resize faces<input type="text" id="materialInputFace" value=""/>
 <br/>
-Replace above materials with the following (leave blank for no replacement<input type="text" id="replacedMaterialInput" value=""/>
+Replace above materials with the following (leave blank for no replacement<input type="text" id="replacedMaterialInput" value="TOOLS/TOOLSPLAYERCLIP"/>
 <br/>
 Player width<input type="text" id="widthInput" value="32"/>
 <br/>
@@ -136,7 +136,7 @@ Find all the brushes in your map where accurate collisions are important.  Figur
 <h4>Single face</h4>
 If a brush needs accurate collisions on more than 1 face, you might want to use this mode.  For example, a ramp that is also part of a wall.
 <h4>Whole brush</h4>
-If a brush only needs accurate collision on one face, and it is more important for the overall size of the collision to remain the same, you might want to use whole brush.  For example, a ramp that is only relevant for its usage while surfing.
+If a brush only needs accurate collision on one face, and it is more important for the overall size of the collision to remain the same, you might want to use whole brush.  For example, a ramp that is only relevant for its usage while surfing.  This is probably what you want to use.
 <h3>Step 2</h3>
 Make a copy of each relevant brush and texture the copy with tools/toolsplayerclip.
 Texture the faces that need movement with a different texture not already used in your map (e.g. tools/toolsclip).  Note that you should leave the original brush with normal textures alone - only apply this different texture to the playerclip brush you just made.
