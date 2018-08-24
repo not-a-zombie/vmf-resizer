@@ -45,7 +45,7 @@
 					var amt = calculateMoveDistance(theta,playerWidth);
 					var displacement = [amt*Math.cos(theta),amt*Math.sin(theta),0];
 					findAllKeyvals(solid,"side").map(function(_side){		
-                        if(unquote(findKeyVal(_side,"\"material\"").string_val.toUpperCase())!=ignoreMaterial.toUpperCase()){
+                        if(unquote(findKeyval(_side,"\"material\"").string_val.toUpperCase())!=ignoreMaterial.toUpperCase()){
                             findKeyval(_side,"\"plane\"").string_val=planeToStr(displacePlane(displacement,strToPlane(findKeyval(_side,"\"plane\"").string_val)));
                         }
 					});
