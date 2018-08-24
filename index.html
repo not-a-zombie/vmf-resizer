@@ -88,7 +88,7 @@
 	function doChanges(){
 		if(parsed){
 			modifyVMF(parsed,document.getElementById("materialInputFace").value,Number(document.getElementById("widthInput").value),false,document.getElementById("replacedMaterialInput").value);
-			modifyVMF(parsed,document.getElementById("materialInputSolid").value,Number(document.getElementById("widthInput").value),true,document.getElementById("replacedMaterialInput").value);
+			modifyVMF(parsed,document.getElementById("materialInputSolid").value,Number(document.getElementById("widthInput").value),true,document.getElementById("replacedMaterialInput").value,document.getElementById("materialInputIgnore").value);
 			saveVMF(parsed);
 		}else{
 			logChanges("No VMF parsed");
