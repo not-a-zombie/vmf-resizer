@@ -20,7 +20,7 @@
 		}
 		reader.readAsText(file);
 	}
-	function modifyVMF(parsedvmf,materialName,playerWidth,moveSolidsInsteadOfFaces, replacementMaterial){
+	function modifyVMF(parsedvmf,materialName,playerWidth,moveSolidsInsteadOfFaces, replacementMaterial, ignoreMaterial){
 		if(moveSolidsInsteadOfFaces){
 			var solids = findAllKeyvalsRecursive(parsedvmf,"solid");
 			solids.map(function(solid){
@@ -44,8 +44,10 @@
 					var theta = vecToEulerAngles(normal)[0];
 					var amt = calculateMoveDistance(theta,playerWidth);
 					var displacement = [amt*Math.cos(theta),amt*Math.sin(theta),0];
-					findAllKeyvals(solid,"side").map(function(_side){							
-						findKeyval(_side,"\"plane\"").string_val=planeToStr(displacePlane(displacement,strToPlane(findKeyval(_side,"\"plane\"").string_val)));
+					findAllKeyvals(solid,"side").map(function(_side){		
+                        if(unquote(findKeyVal(_side,"\"material\"").string_val.toUpperCase())!=ignoreMaterial.toUpperCase()){
+                            findKeyval(_side,"\"plane\"").string_val=planeToStr(displacePlane(displacement,strToPlane(findKeyval(_side,"\"plane\"").string_val)));
+                        }
 					});
 					logChanges("Moved solid " + findKeyval(solid,"\"id\"").string_val + " in the direction [" + displacement.join(" ")+"]");
 					if(replacementMaterial){//empty string is falsy
@@ -116,6 +118,8 @@ This is a tool for automatically calculating the correct distance for the chosen
 <br/>
 Material to resize solids<input type="text" id="materialInputSolid" value="TOOLS/TOOLSCLIP"/>
 <br/>
+Material to ignore when resizing<input type="text" id="materialInputIgnore" value="TOOLS/TOOLSNPCCLIP"/>
+<br/>
 Material to resize faces<input type="text" id="materialInputFace" value=""/>
 <br/>
 Replace above materials with the following (leave blank for no replacement<input type="text" id="replacedMaterialInput" value="TOOLS/TOOLSPLAYERCLIP"/>
@@ -143,12 +147,10 @@ Texture the faces that need movement with a different texture not already used i
 Make each original brush a brush entity that has no collision (e.g. func_brush with solidity set to Never Solid).  
 You should now have 2 different brushes on top of each other, one which is a collision with no visible part, one which is a visible part with no collision.
 <h3>Step 3</h3>
-Choose the vmf in the file selector and set all the relevant fields.  In Counter-Strike, player width is 32 units.  In Team Fortress 2, player width is 48 units.
+Choose the vmf in the file selector and set all the relevant fields.  In Counter-Strike:Source and Global Offensive, player width is 32 units.  In Team Fortress 2, player width is 48 units.
 Then, click the "modify vmf" button and wait for the webpage to process the file.
 <h3>Step 4</h4>
 Check the new vmf for any problems and make sure everything works properly.
-<br/>
-In particular, I have not verified that curved ramps will work properly when modified like this.
 <br/>
 <br/>
 <b>Note: If you are using Crashfort's Hammerpatch, any changes made by this tool may be reverted when you open the vmf, as only faces are moved, not vertices.</b> <br/>
