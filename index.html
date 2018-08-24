@@ -47,7 +47,12 @@
 					findAllKeyvals(solid,"side").map(function(_side){		
                         if(unquote(findKeyval(_side,"\"material\"").string_val.toUpperCase())!=ignoreMaterial.toUpperCase()){
                             findKeyval(_side,"\"plane\"").string_val=planeToStr(displacePlane(displacement,strToPlane(findKeyval(_side,"\"plane\"").string_val)));
-                        }
+                        }else{
+													if(replacementMaterial){//empty string is falsy
+														findKeyval(_side,"\"material\"").string_val=quote(replacementMaterial);
+														logChanges("Replaced material on side " + findKeyval(_side,"\"id\"").string_val);	
+													}
+												}
 					});
 					logChanges("Moved solid " + findKeyval(solid,"\"id\"").string_val + " in the direction [" + displacement.join(" ")+"]");
 					if(replacementMaterial){//empty string is falsy
