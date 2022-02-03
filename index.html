@@ -47,6 +47,11 @@
 					findAllKeyvals(solid,"side").map(function(_side){		
                         if(unquote(findKeyval(_side,"\"material\"").string_val.toUpperCase())!=ignoreMaterial.toUpperCase()){
                             findKeyval(_side,"\"plane\"").string_val=planeToStr(displacePlane(displacement,strToPlane(findKeyval(_side,"\"plane\"").string_val)));
+							//hpp support
+							var vertices = findKeyval(_side,"vertices_plus");
+							if(vertices){
+								moveHppVertices(vertices,displacement);
+							}
                         }else{
 													if(replacementMaterial){//empty string is falsy
 														findKeyval(_side,"\"material\"").string_val=quote(replacementMaterial);
@@ -69,13 +74,19 @@
 			sides.map(function(side){
 				if(unquote(findKeyval(side,"\"material\"").string_val.toUpperCase())==materialName.toUpperCase()){
 					//move this thing the appropriate amount
-					var plane = strToPlane(findKeyval(side,"\"plane\"").string_val);
+					var plane = strToPlane(findKeyval(side,"\"plane\"").string_val);					
 					var normal = calculateNormalOfPlane(plane);
 					var theta = vecToEulerAngles(normal)[0];
 					var amt = calculateMoveDistance(theta,playerWidth);
 					var displacement = [amt*Math.cos(theta),amt*Math.sin(theta),0];
 					plane=displacePlane(displacement,plane);
 					findKeyval(side,"\"plane\"").string_val=planeToStr(plane);
+					
+					//hammer++ support
+					var vertices = findKeyval(side,"vertices_plus");
+					if(vertices){
+						moveHppVertices(vertices,displacement);
+					}
 					logChanges("Moved face " + findKeyval(side,"\"id\"").string_val + " in the direction [" + displacement.join(" ")+"]"); 
 					if(replacementMaterial){//empty string is falsy
 						findKeyval(side,"\"material\"").string_val=quote(replacementMaterial);
@@ -85,6 +96,14 @@
 			});
 		}
 		
+	}
+	function moveHppVertices(vertices, displacementVector){		
+		var vs = findAllKeyvals(vertices,"\"v\"");
+		for(var i = 0; i < vs.length; i++){
+			var vertex = vs[i];
+			var vertexNum = strToPlane(vertex.string_val);//this function is misleadingly named - its current implementation should work for either
+			vertex.string_val = "\"" + (vertexNum[0]+displacementVector[0])+" " + (vertexNum[1]+displacementVector[1])+" " + (vertexNum[2]+displacementVector[2]) + "\"";
+		}
 	}
 	function calculateMoveDistance(theta,playerWidth){
 		var theta = (theta+ 2 * Math.PI) % (Math.PI / 2);
